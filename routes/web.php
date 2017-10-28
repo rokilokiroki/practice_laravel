@@ -11,4 +11,5 @@
 |
 */
 Route::get('/', 'HelloController@index');
+Route::get('/other', 'HelloController@other');
 
