@@ -10,8 +10,16 @@
 @section('content')
   <p>ここが本文のコンテンツです</p>
   <p>必要なだけ記述できます</p>
-  <p>Controller value<br>'message' = {{$message}}</p>
-  <p>ViewComposer value<br>'View_message'={{$view_message}}</p>
+  <table>
+    @if(is_array($data))
+      @foreach($data as $item)
+      <tr><th>{{$item['name']}}</th></tr>
+      @endforeach
+    @else
+      <p>該当するデータがありません</p>
+    @endif
+  </table>
+
 @endsection
 
 @section('footer')

@@ -8,7 +8,7 @@ use Illuminate\Http\Response;
 
 class HelloController extends Controller{
 
-  public function index(){
+  public function index(Request $request){
     # $data = ['msg'=>'']の場合、 viewにはキーであるmsgという名前の変数としてテンプレートに用意されることになる。テンプレートには$msgとして渡される。
     #viewの第二引数ではテンプレート側に用意する変数名をキーに指定して、値(value)を用意する。
     #$data = ['one','two','three','four','five'] のようにテンプレート側で配列をそのまま使いたい場合はview('hello.index',['data'=>$data]);のように配列をバリューにセットしてviewに送る。要はキーを設定しなければならない？
@@ -17,7 +17,9 @@ class HelloController extends Controller{
     //   ['name'=>'山元', 'mail'=>'ziro@yamamoto'],
     //   ['name'=>'山義', 'mail'=>'saburo@yamagi'],
     // ];
-    return view('hello.index', ['message'=>'hello']);
+    // dd($request->data);
+    return view('hello.index', ['data'=>'$request->data']);
+    // middleware->controller->view
   }
 
   public function post(Request $request){

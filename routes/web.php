@@ -1,4 +1,5 @@
 <?php
+use App\Http\Middleware\HelloMiddleware;
 
 /*
 |--------------------------------------------------------------------------
@@ -10,7 +11,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/', 'HelloController@index');
+Route::get('/', 'HelloController@index')
+      ->middleware(HelloMiddleware::class);
 Route::post('/', 'HelloController@post');
 // Route::get('/other', 'HelloController@other');
 
