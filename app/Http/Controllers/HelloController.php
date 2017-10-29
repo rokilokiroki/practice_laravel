@@ -9,12 +9,17 @@ use Illuminate\Http\Response;
 class HelloController extends Controller{
 
   public function index(){
-    #viewにはキーであるmsgという名前の変数としてテンプレートに用意されることになる。テンプレートには$msgとして渡される。
-    return view('hello.index',['msg'=>'']);
+    # $data = ['msg'=>'']の場合、 viewにはキーであるmsgという名前の変数としてテンプレートに用意されることになる。テンプレートには$msgとして渡される。
+    #viewの第二引数ではテンプレート側に用意する変数名をキーに指定して、値(value)を用意する。
+    #$data = ['one','two','three','four','five'] のようにテンプレート側で配列をそのまま使いたい場合はview('hello.index',['data'=>$data]);のように配列をバリューにセットしてviewに送る。要はキーを設定しなければならない？
+    $data = ['one','two','three','four','five'];
+    return view('hello.index',['data'=>$data],['message'=>'']);
   }
 
   public function post(Request $request){
-    return view('hello.index', ['msg'=>$request->msg]);
+    #例えばview側で渡す際に$data['message']と書いてみたが、取り出せなかった。Undefined variable: dataと出た。なのでキー名として渡さなければ無理だ。
+    $data = ['one','two','three','four','five'];
+    return view('hello.index', ['data'=>$data],['message'=>$request->msg]);
   }
 }
 

@@ -16,8 +16,8 @@
 </head>
 <body>
   <h1>Blade/Index</h1>
-  @if ($msg != '')
-  <p>こんにちは,{{$msg}}</p>
+  @if ($message != '')
+  <p>こんにちは,{{$message}}</p>
   @else
   <p>何か書いて下さい</p>
   @endif
@@ -26,5 +26,16 @@
     <input type="text" name="msg">
     <input type="submit">
   </form>
+  <ul>
+  @php
+  $counter = 0;
+  @endphp
+  @while($counter<count($data))
+  <li>{{$data[$counter]}}</li>
+  @php
+  $counter++
+  @endphp
+  @endwhile
+  </ul>
 </body>
 </html>
