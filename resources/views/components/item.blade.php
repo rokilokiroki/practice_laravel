@@ -1,2 +1,2 @@
 
-<li>{{$item['name']}}[{{$item['mail']}}]</li>
+<!-- <li>{{$item['name']}}[{{$item['mail']}}]</li> -->

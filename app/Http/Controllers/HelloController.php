@@ -12,12 +12,12 @@ class HelloController extends Controller{
     # $data = ['msg'=>'']の場合、 viewにはキーであるmsgという名前の変数としてテンプレートに用意されることになる。テンプレートには$msgとして渡される。
     #viewの第二引数ではテンプレート側に用意する変数名をキーに指定して、値(value)を用意する。
     #$data = ['one','two','three','four','five'] のようにテンプレート側で配列をそのまま使いたい場合はview('hello.index',['data'=>$data]);のように配列をバリューにセットしてviewに送る。要はキーを設定しなければならない？
-    $data =[
-      ['name'=>'山田', 'mail'=>'taro@yamada'],
-      ['name'=>'山元', 'mail'=>'ziro@yamamoto'],
-      ['name'=>'山義', 'mail'=>'saburo@yamagi'],
-    ];
-    return view('hello.index', ['data'=>$data]);
+    // $data =[
+    //   ['name'=>'山田', 'mail'=>'taro@yamada'],
+    //   ['name'=>'山元', 'mail'=>'ziro@yamamoto'],
+    //   ['name'=>'山義', 'mail'=>'saburo@yamagi'],
+    // ];
+    return view('hello.index', ['message'=>'hello']);
   }
 
   public function post(Request $request){
