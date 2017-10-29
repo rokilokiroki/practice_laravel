@@ -38,13 +38,11 @@
   </style>
 </head>
 <body>
-  <!-- @yieldはセクションの内容をはめ込んで表示するためのものもの -->
   <h1>@yield('title')</h1>
   @section('menubar')
   <ul>
     <p class="menutitle">※Menu</p>
     <li>@show</li>
-    <!-- 一番土台となるレイアウトで@sectionを用意する場合は@endsectionではなく@showで終わらせる -->
   </ul>
   <hr size="1">
   <div class="content">
