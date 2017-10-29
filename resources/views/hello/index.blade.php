@@ -1,21 +1,25 @@
-<html>
-<head>
-  <title>Hello/index</title>
-  <style>
-  body{
-    font-size:16pt;
-    color:#999;
-  }
-  h1{
-    font-size:100pt;
-    text-align:right;
-    color:#eee;
-    margin:-40px 0px -50px 0px;
-  }
-  </style>
-</head>
+@extends('layouts.helloapp')
+
+@section('title','Index')
+
+@section('menubar')
+  @parent
+  インデックスページ
+@endsection
+
+@section('content')
+  <p>ここが本文のコンテンツです</p>
+  <p>必要なだけ記述できます</p>
+@endsection
+
+@section('footer')
+copyright 2017 yamamoto
+@endsection
+
+<!-- <html>
+
 <body>
-  <h1>Blade/Index</h1>
+  <h1></h1>
   @if ($message != '')
   <p>こんにちは,{{$message}}</p>
   @else
@@ -38,4 +42,4 @@
   @endwhile
   </ul>
 </body>
-</html>
+</html> -->
