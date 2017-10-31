@@ -18,7 +18,7 @@ class HelloController extends Controller{
     //   ['name'=>'山義', 'mail'=>'saburo@yamagi'],
     // ];
     // dd($request->data);
-    return view('hello.index', ['data'=>'$request->data']);
+    return view('hello.index');
     // middleware->controller->view
   }
 

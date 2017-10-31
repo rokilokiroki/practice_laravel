@@ -12,7 +12,10 @@ use App\Http\Middleware\HelloMiddleware;
 |
 */
 Route::get('/', 'HelloController@index')
-      ->middleware(HelloMiddleware::class);
+      ->middleware('hello');
+      // ->middleware(HelloMiddleware::class);
+      // グローバルミドルウェアとしてkernelに登録したので消していい。
+      // ->middleware('hello');でmiddleware groupのhelloグループが設定された。このルーティングにアクセスした際はhelloグループに登録してある全てのmiddlewareが実行される。
 Route::post('/', 'HelloController@post');
 // Route::get('/other', 'HelloController@other');
 

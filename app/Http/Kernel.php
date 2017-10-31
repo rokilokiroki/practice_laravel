@@ -19,6 +19,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
+    // グローバルミドルウェアとして登録すると、ルーティングの個々のミドルウェアの呼び出し処理は不要になる。
 
     /**
      * The application's route middleware groups.
@@ -40,6 +41,10 @@ class Kernel extends HttpKernel
             'throttle:60,1',
             'bindings',
         ],
+
+        'hello' => [
+            \App\Http\Middleware\HelloMiddleware::class,
+        ]
     ];
 
     /**

@@ -10,15 +10,7 @@
 @section('content')
   <p>ここが本文のコンテンツです</p>
   <p>必要なだけ記述できます</p>
-  <table>
-    @if(is_array($data))
-      @foreach($data as $item)
-      <tr><th>{{$item['name']}}</th></tr>
-      @endforeach
-    @else
-      <p>該当するデータがありません</p>
-    @endif
-  </table>
+  <p>これは,<middleware>google.com</middleware></p>
 
 @endsection
 
