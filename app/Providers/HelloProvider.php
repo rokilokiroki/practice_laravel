@@ -4,7 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Validator;
+use App\Http\Validators\HelloValidator;
 
+// 作成したバリデータを組み込むにはサービスプロバイダを利用。
 class HelloProvider extends ServiceProvider
 {
     /**
@@ -14,13 +17,19 @@ class HelloProvider extends ServiceProvider
      */
     public function boot()
     {
-        View::composer(
-            'hello.index','App\Http\Composers\HelloComposer'
-        );
+        $validator = $this->app['validator'];
+        $validator->resolver(function($translator, $data, $rules, $messages){
+            return new HelloValidator($translator, $data, $rules, $messages);
+        });
+        // View::composer(
+        //     'hello.index','App\Http\Composers\HelloComposer'
+        // );
         // View::composer(ビューの指定、関数またはクラス);第一引数にはビューが第二引数には実行する処理となるクロージャーかビューコンポーザーのクラスを指定する。
         // $view->with(変数名、値);ビューに変数などを追加するためのもの。
         // $view->with('view_message', 'composer message!');
         // config/app.phpにサービスプロバイダを登録しにいく
+
+
     }
 
     /**
