@@ -12,6 +12,7 @@ class VerifyCsrfToken extends BaseVerifier
      * @var array
      */
     protected $except = [
-        //
+        '/',
     ];
+    // CSRF対策を適用しないパスを書く。
 }

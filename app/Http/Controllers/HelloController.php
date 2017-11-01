@@ -12,21 +12,27 @@ class HelloController extends Controller{
     # $data = ['msg'=>'']の場合、 viewにはキーであるmsgという名前の変数としてテンプレートに用意されることになる。テンプレートには$msgとして渡される。
     #viewの第二引数ではテンプレート側に用意する変数名をキーに指定して、値(value)を用意する。
     #$data = ['one','two','three','four','five'] のようにテンプレート側で配列をそのまま使いたい場合はview('hello.index',['data'=>$data]);のように配列をバリューにセットしてviewに送る。要はキーを設定しなければならない？
-    $validator = Validator::make($request->query(),[
-      'id' => 'required',
-      'pass' => 'required',
-    ]);
-    if ($validator->fails()) {
-      $msg = 'クエリーに問題があります';
+    if ($request->hasCookie('msg'))
+    {
+      $msg = 'Cookie:'.$request->cookie('msg');
     } else {
-      $msg = 'ID/PADDを受け付けました';
+      $msg = 'クッキーなし婆';
     }
+    // $validator = Validator::make($request->query(),[
+    //   'id' => 'required',
+    //   'pass' => 'required',
+    // ]);
+    // if ($validator->fails()) {
+    //   $msg = 'クエリーに問題があります';
+    // } else {
+    //   $msg = 'ID/PADDを受け付けました';
+    // }
 
     return view('hello.index', ['msg'=>'フォームを入力してくだしあ']);
     // middleware->controller->view
   }
 
-  public function post(HelloRequest $request){
+  public function post(Request $request){
     #例えばview側で渡す際に$data['message']と書いてみたが、取り出せなかった。Undefined variable: dataと出た。なのでキー名として渡さなければ無理だ。
     // $validator = Validator::make(値の配列 , ルールの配列, エラーメッセージ);
     // バリデータはフォーム以外の値をチェックするのにも使える。例えばクエリなど。
@@ -59,7 +65,14 @@ class HelloController extends Controller{
     //   return redirect('/')->withErrors($validator)->withInput();
       // withErrors()で引数にvalidatorインスタンスを渡している。これによりこのvalidatorで発生したエラーメッセージをリクエスト先まで引き継げる。withInputでは送信されたフォームの値をそのまま引き継げる。
     // }
-    return view('hello.index', ['msg'=>'正しく入力されました']);
+    $validate_rule = [
+      'msg' => 'required',
+    ];
+    $this->validate($request, $validate_rule);
+    $msg = $request->msg;
+    $response = new Response(view('hello.index', ['msg' => $msg]));
+    $response->cookie('msg',$msg,100);
+    return $response;
   }
 }
 
