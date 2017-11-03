@@ -11,7 +11,20 @@ use Validator;
 class HelloController extends Controller{
 
   public function index(Request $request){
+    // return view(テンプレート , 配列)
     # $data = ['msg'=>'']の場合、 viewにはキーであるmsgという名前の変数としてテンプレートに用意されることになる。テンプレートには$msgとして渡される。
+    // laravel特有のviewへの変数の渡し方である。配列にたくさんの変数をいれることによって、view側で使えるようにしている。phpでの配列の取り出し方,変数名[Key]では取り出せない。配列に入っている変数は、ただ配列にいれないとview側でつかないだけである。要は
+    // $msg = 'こんにちは';
+    // をview(テンプレート, $msg)として渡せないので['msg' => 'こんにちは']と連想配列の形にしないと渡せない。
+    // そしてview側が見ているのはたくさんの変数が入っている配列の名前ではなく、その中に入っている変数である。
+    // なので一度$data = ['msg' => 'こんにちは']というふうに連想配列に入れてreturn view(テンプレート, $data)として渡さないとならない。
+    // なのでテンプレートに変数を用意したい場合は、配列に入れて連想配列の形にしなくてはならない。配達便で我々が欲しいのはダンボール（配列名）ではなく、商品（変数名）だということになる。
+    // そして配列そのものを渡したい場合
+    // $data =['one', 'two', 'three']という配列をviewに渡したい場合、return view(テンプレート, [data => $data])とする。
+    // 今回我々が欲しいのは配列そのものなので,$data =['one', 'two', 'three']→return view(テンプレート, $data])としてview側で使いたいところを一度、配列にいれる。reutrn view(テンプレート, ['data' => $data])とする。上記のダンボールの考え方である。配達便もダンボールに包まなければ商品を送れない。return view(テンプレート, $data])だけだとreturn view(テンプレート, ['one', 'two', 'three']])が送られているだけになる。なのでreutrn view(テンプレート, ['data' => $data])として商品(変数名)をダンボール(配列)に包まなければならない。
+    // reutrn view(テンプレート, ['data' => ['one', 'two', 'three']])でも大丈夫。上記の考え方と同じでこの渡し方は$data =['one', 'two', 'three']をreturn view内でしているだけ。
+
+
     #viewの第二引数ではテンプレート側に用意する変数名をキーに指定して、値(value)を用意する。
     #$data = ['one','two','three','four','five'] のようにテンプレート側で配列をそのまま使いたい場合はview('hello.index',['data'=>$data]);のように配列をバリューにセットしてviewに送る。要はキーを設定しなければならない？
     // if ($request->hasCookie('msg'))
@@ -29,7 +42,14 @@ class HelloController extends Controller{
     // } else {
     //   $msg = 'ID/PADDを受け付けました';
     // }
-    $items = DB::select('select * from people');
+
+    // $items = DB::select('select * from people');
+    // DB::select('実行するSQL文');
+    // selectはデータベースからレコードを取り出すための処理。実行するとレコードの情報が戻り値として返される
+    $items = DB::table('people')
+           ->orderBy('age', 'desc')
+           ->get();
+    // DB::tableは指定したテーブルのビルダを取得する。ビルダはIlluminate\Database\Query名前空間にあるBuilderクラスでSQLクエリ文を生成するための機能を提供する。DB::tableでビルダを用意して、このビルダの中野メソッドを呼び出していけばテーブルの操作が行える。get()メソッドはSQLのselect文に相当する。実行結果はCollectionになっていてこの中に取得したレコードのオブジェクトがまとめられている。引数をつければ、get([id, name])のようにすればそのカラムだけ取り出せる。
     return view('hello.index', ['items' => $items]);
     // middleware->controller->view
   }
@@ -67,15 +87,94 @@ class HelloController extends Controller{
     //   return redirect('/')->withErrors($validator)->withInput();
       // withErrors()で引数にvalidatorインスタンスを渡している。これによりこのvalidatorで発生したエラーメッセージをリクエスト先まで引き継げる。withInputでは送信されたフォームの値をそのまま引き継げる。
     // }
-    $validate_rule = [
-      'msg' => 'required',
-    ];
-    $this->validate($request, $validate_rule);
-    $msg = $request->msg;
-    $response = new Response(view('hello.index', ['msg' => $msg]));
-    $response->cookie('msg',$msg,100);
-    return $response;
-  }
+  //   $validate_rule = [
+  //     'msg' => 'required',
+  //   ];
+  //   $this->validate($request, $validate_rule);
+  //   $msg = $request->msg;
+  //   $response = new Response(view('hello.index', ['msg' => $msg]));
+  //   $response->cookie('msg',$msg,100);
+  //   return $response;
+  // }
+    $items = DB::select('select * from people');
+    return view('hello.index', ['items' => $items]);
+    }
+
+    public function add(Request $request){
+        return view('hello.add');
+    }
+
+    public function create(Request $request){
+        $param = [
+            'name' => $request->name,
+            'mail' => $request->mail,
+            'age' => $request->age,
+        ];
+        // DB::insert('insert into people(name, mail, age) values(:name, :mail, :age)', $param);
+        // DB::insert('SQL実行文', パラメータ配列);
+        DB::table('people')->insert($param);
+        // DB::table('people')->insert(データをまとめた配列);
+        // SQLクエリ文に較べてクエリビルダは書きやすい。
+        return redirect('/');
+    }
+
+    public function edit(Request $request){
+        // $param = ['id' => $request->id];
+        // $item = DB::select('select * from people where id = :id',$param);
+        // where文でid=1のものをすべてとってきている。
+        $item = DB::table('people')
+                  ->where('id', $request->id)->first();
+        return view('hello.edit',['form' => $item]);
+    }
+
+    public function update(Request $request){
+        $param = [
+            'id' => $request->id,
+            'name' => $request->name,
+            'mail' => $request->mail,
+            'age' => $request->age,
+        ];
+        // DB::update('update people set name = :name, mail = :mail, age = :age where id = :id', $param);
+        DB::table('people')
+          ->where('id', $request->id)->update($param);
+        return redirect('/');
+        // DB::table()->where(更新対象の指定)->update(配列);
+          // update()もinsertとほとんど一緒。更新する値を連想配列にまとめる。ただinsertと違うのはどのレコードを更新するかを決め無くてはならない。whereなしてupdateするとすべてのレコードが更新される。railsでも同じだがeditでidを指定したからといってupdateメソッドの中でidを指定しなくていい理由にはならない。あくまでeditメソッドは表示するだけ。ちゃんとupdate()するならidを指定する。
+
+    }
+
+    public function delete(Request $request){
+        $item = DB::table('people')
+                  ->where('id' , $request->id)
+                  ->first();
+        return view('hello.delete', ['form' => $item]);
+    }
+
+    public function remove(Request $request){
+        DB::table('people')
+            ->where('id', $request->id)->delete();
+        // DB::delete('delete from people where id = :id',$param);
+        // delete from people where id = :id
+        // delete文はidさえわかれば行える。
+        return redirect('/');
+    }
+
+    public function show(Request $request){
+        $page = $request->page;
+        $items = DB::table('people')
+                    ->offset($page * 3)
+                    ->limit(3)
+                    ->get();
+        // 任意パラメータ, /show?name=〇〇のように?を付けてから利用することによってルーティングで指定されていないパラメータも渡せるようになる。
+        // where()->orWhere()で条件に一つでも合致すればすべて検索させることができる。
+        // where()->where()ならすべての条件に合致するものだけ検索
+        // where('name', 'like', '%'.$name.'%')ではwhereでnameにlike検索の条件設定をしている。SQLではカラム like '%テキスト%'みたいに実行される。
+        return view('hello.show', ['items'=> $items]);
+        // where('カラム名', 値)
+        // SQLのwhere句に相当する。このwhereは引数にカラム名と値を指定すると、条件に相当すするレコードを絞り込む。
+        // first()
+        // 最初のレコードをとってくる。get()は検索されたレコードをすべてとってくるが、first()は最初だけ。一つだけしかないものはこっちのほうがいい。
+    }
 }
 
 // global $head, $style, $body, $end;
