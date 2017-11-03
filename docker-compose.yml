@@ -32,5 +32,15 @@ services:
     ports:
         - "33061:3306"
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+     - PMA_ARBITRARY=1
+    restart: always
+    ports:
+     - 8090:80
+    volumes:
+     - "./phpmyadmin/sessions:/sessions"
 volumes:
   dbdata:

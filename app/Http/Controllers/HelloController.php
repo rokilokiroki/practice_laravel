@@ -5,19 +5,21 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Requests\HelloRequest;
+use Illuminate\Support\Facades\DB;
 use Validator;
+
 class HelloController extends Controller{
 
   public function index(Request $request){
     # $data = ['msg'=>'']の場合、 viewにはキーであるmsgという名前の変数としてテンプレートに用意されることになる。テンプレートには$msgとして渡される。
     #viewの第二引数ではテンプレート側に用意する変数名をキーに指定して、値(value)を用意する。
     #$data = ['one','two','three','four','five'] のようにテンプレート側で配列をそのまま使いたい場合はview('hello.index',['data'=>$data]);のように配列をバリューにセットしてviewに送る。要はキーを設定しなければならない？
-    if ($request->hasCookie('msg'))
-    {
-      $msg = 'Cookie:'.$request->cookie('msg');
-    } else {
-      $msg = 'クッキーなし婆';
-    }
+    // if ($request->hasCookie('msg'))
+    // {
+    //   $msg = 'Cookie:'.$request->cookie('msg');
+    // } else {
+    //   $msg = 'クッキーなし婆';
+    // }
     // $validator = Validator::make($request->query(),[
     //   'id' => 'required',
     //   'pass' => 'required',
@@ -27,8 +29,8 @@ class HelloController extends Controller{
     // } else {
     //   $msg = 'ID/PADDを受け付けました';
     // }
-
-    return view('hello.index', ['msg'=>'フォームを入力してくだしあ']);
+    $items = DB::select('select * from people');
+    return view('hello.index', ['items' => $items]);
     // middleware->controller->view
   }
 
