@@ -15,8 +15,10 @@ return [
     |            "memcached", "redis", "array"
     |
     */
-
-    'driver' => env('SESSION_DRIVER', 'file'),
+    // セッションをファイルからデータベースに変更する場合は、このsession.phpの中の'driver'の項目を変更する。
+    // 'driver' => env('SESSION_DRIVER', 'file'),
+    'driver' => env('SESSION_DRIVER', 'database'),
+    // 続いてプロジェクトフォルダ内にある.envを修正する。
 
     /*
     |--------------------------------------------------------------------------

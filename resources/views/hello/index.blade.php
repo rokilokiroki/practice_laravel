@@ -1,13 +1,26 @@
 @extends('layouts.helloapp')
-
+<style>
+    .pagination { font-size:12pt; }
+    .pagination li { display:inline-block }
+    tr th a:link { color: white; }
+    tr th a:visited { color: white; }
+    tr th a:hover { color: white; }
+    tr th a:active { color: white; }
+</style>
 @section('title','Index')
 @section('menubar')
   @parent
 
   インデックスページ
 @endsection
-
+<!-- Auth::checkは現在アクセスしているユーザーがログインしているかを確認するもの。 -->
 @section('content')
+    @if (Auth::check())
+    <p>USER: {{$user->name . ' (' . $user->email . ')'}}</p>
+    @else
+    <p>※ログインしていません。（<a href="/login">ログイン</a>｜
+        <a href="/register">登録</a>）</p>
+    @endif
   <p>ここが本文のコンテンツです</p>
   <p>必要なだけ記述できます</p>
   @if(count($errors) > 0)
@@ -16,11 +29,16 @@
   @endif
   <table>
   <tr><th>Name: </th><th>Mail</th><th>age</th></tr>
+  <tr>
+    <th><a href="/?sort=name">name</a></th>
+    <th><a href="/?sort=mail">mail</a></th>
+    <th><a href="/?sort=age">age</a></th>
+  </tr>
   @foreach ($items as $item)
     <tr>
-      <td>{{$item->name}}</td>
-      <td>{{$item->mail}}</td>
-      <td>{{$item->age}}</td>
+        <td>{{$item->name}}</td>
+        <td>{{$item->mail}}</td>
+        <td>{{$item->age}}</td>
     </tr>
   @endforeach
   <!-- <form action="/" method="post" accept-charset="utf-8"> -->
@@ -46,7 +64,8 @@
 <!--     <tr><th></th><input type="submit" value="send"></tr>
   </form> -->
   </table>
-
+  {{$items->links()}}
+  <!-- $itemsはsimplePaginateで取得したインスタンス。そして$itemsには、前後の移動のためのリンクを生成する機能も含まれている。 -->
 @endsection
 
 @section('footer')

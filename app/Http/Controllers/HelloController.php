@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Requests\HelloRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Person;
 use Validator;
 
 class HelloController extends Controller{
@@ -46,11 +48,26 @@ class HelloController extends Controller{
     // $items = DB::select('select * from people');
     // DB::select('実行するSQL文');
     // selectはデータベースからレコードを取り出すための処理。実行するとレコードの情報が戻り値として返される
-    $items = DB::table('people')
-           ->orderBy('age', 'desc')
-           ->get();
+    // $items = DB::table('people')
+    //        ->orderBy('age', 'desc')
+    //        ->get();
     // DB::tableは指定したテーブルのビルダを取得する。ビルダはIlluminate\Database\Query名前空間にあるBuilderクラスでSQLクエリ文を生成するための機能を提供する。DB::tableでビルダを用意して、このビルダの中野メソッドを呼び出していけばテーブルの操作が行える。get()メソッドはSQLのselect文に相当する。実行結果はCollectionになっていてこの中に取得したレコードのオブジェクトがまとめられている。引数をつければ、get([id, name])のようにすればそのカラムだけ取り出せる。
-    return view('hello.index', ['items' => $items]);
+    // $items = DB::table('people')->simplePaginate(5);
+    // ここで5項目ずつレコードを取り出して表示するようにする。
+    // $items = DB::table(テーブル名)->simplePaginate(表示数);
+    // DB::tableでテーブルを指定し、その戻り値のインスタンスからsimplePaginateメソッドを呼び出す。
+    // モデルクラスでやる場合も
+    // $items = DB::モデル名->simplePaginate(表示数);
+    // linksメソッドも同じように使える。
+        $sort = $request->sort;
+        $user = Auth::user();
+        // Auth::userというメソッドの戻り値を変数$userに入れて、テンプレートに渡している。
+        // ログインしているユーザーのモデルインスタンスを返す。
+        $items = Person::simplePaginate(10);
+        // $items = Person::orderBy($sort, 'asc')
+        //     ->simplePaginate(10);
+        $param = ['items' => $items, 'sort' => $sort, 'user'=>$user];
+        return view('hello.index', $param);
     // middleware->controller->view
   }
 
@@ -174,6 +191,48 @@ class HelloController extends Controller{
         // SQLのwhere句に相当する。このwhereは引数にカラム名と値を指定すると、条件に相当すするレコードを絞り込む。
         // first()
         // 最初のレコードをとってくる。get()は検索されたレコードをすべてとってくるが、first()は最初だけ。一つだけしかないものはこっちのほうがいい。
+    }
+
+    public function rest(Request $request)
+    {
+        return view('hello.rest');
+    }
+
+    public function ses_get(Request $request)
+    {
+        $sesdata = $request->session()->get('msg');
+        return view('hello.session',['session_data'=> $sesdata]);
+        // 値を取得する
+        // $変数 = $request->session()->get(キー);
+    }
+
+    public function ses_put(Request $request)
+    {
+        $msg = $request->input;
+        $request->session()->put('msg', $msg);
+        // 値を保存する
+        // $request->session()->put(キー, 値);
+        return redirect('/session');
+    }
+
+    public function getAuth(Request $request)
+    {
+        $param = ['message' => 'ログインして下さい'];
+        return view('hello.auth', $param);
+    }
+    public function postAuth(Request $request)
+    {
+        $email = $request->email;
+        $password = $request->password;
+        if(Auth::attempt(['email' => $email, 'password' => $password]))
+            // ログイン処理はattemptメソッドで行う。
+            // 引数にemail, passwordというキーをもった連想配列を渡す。
+            {
+            $msg = 'ログインしました。（' . Auth::user()->name . '）';
+            } else {
+            $msg = 'ログインに失敗しました。';
+        }
+        return view('hello.auth', ['message' => $msg]);
     }
 }
 
